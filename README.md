@@ -1,2 +1,2 @@
 "# javaEcommerce" 
-![Schema Diagram](https://raw.githubusercontent.com/sakshi2215/javaEcommerce/main/screenshots/swagger.png)
+![Schema Diagram](https://github.com/sakshi2215/javaEcommerce/blob/main/SchemaDiagram.png)
