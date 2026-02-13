@@ -6,7 +6,7 @@
 
 ### `registerUser` Method
 
-**Endpoint:** `POST /users/register` *(example)*
+**Endpoint:** `POST /users/register` 
 **Parameter Expecting:**
 ```json
 {
@@ -14,12 +14,14 @@
   "email": "string",
   "password": "string"
 }
+```
 Logic:
--Check if email already exists → throw ResourceAlreadyExistsException if yes.
--Create new User entity from request.
--Save User to repository.
--Create and save a Cart for the user.
--Return UserResponse.
+1. Check if email already exists → throw ResourceAlreadyExistsException if yes.
+2. Create new User entity from request.
+3. Save User to repository.
+4. Create and save a Cart for the user.
+5. Return UserResponse.
+
 **Response:**
 {
   "id": "long",
@@ -30,7 +32,7 @@ Logic:
 
 ### `createCategory` Method
 
-**Endpoint:** `POST /categories` *(example)*
+**Endpoint:** `POST /categories` 
 **Parameter Expecting:**
 
 ```json
@@ -38,16 +40,233 @@ Logic:
   "name": "string",
   "description": "string"
 }
+```
 Logic:
--Check if category name already exists otherwise throw ResourceAlreadyExistsException if yes.
--Create new Category entity from request.
--Save Category to repository.
--Return CategoryResponse.
+1. Check if category name already exists otherwise throw ResourceAlreadyExistsException if yes.
+2. Create new Category entity from request.
+3. Save Category to repository.
+4. Return CategoryResponse.
 
-Response:
+**Response:**
 
 {
   "id": "long",
   "name": "string",
   "description": "string"
 }
+
+### `createProduct` Method
+
+**Endpoint:** `POST /products`
+**Parameter Expecting:**
+
+```json
+{
+  "name": "string",
+  "description": "string",
+  "price": "double",
+  "stockQuantity": "int",
+  "categoryId": "long"
+}
+```
+Logic:
+1.Fetch category by categoryId else throw ResourceNotFoundException if not found.
+2. Validate:
+ price must be greater than 0.
+ stockQuantity cannot be negative.
+3. Create new Product entity.
+4. Save Product to repository.
+5. Return ProductResponse.
+
+**Response:**
+{
+  "id": "long",
+  "name": "string",
+  "description": "string",
+  "price": "double",
+  "stockQuantity": "int",
+  "categoryName": "string"
+}
+
+### `updateStock` Method
+**Endpoint:** `PATCH /products/{productId}/stock`
+
+**Parameter Expecting:**
+ Path Variable: productId (long)
+**Request Body:**
+
+{
+  "newStockQuantity": "int"
+}
+Logic:
+1. Fetch product by productId , throw ResourceNotFoundException if not found.
+2.Validate newStockQuantity (cannot be negative).
+3.Update product stock.
+4.Save updated product.
+5.Return updated ProductResponse.
+
+**Response:**
+
+{
+  "id": "long",
+  "name": "string",
+  "description": "string",
+  "price": "double",
+  "stockQuantity": "int",
+  "categoryName": "string"
+}
+
+### `addToCart` Method
+
+**Endpoint:** `POST /users/{userId}/cart` *(example)*
+**Parameter Expecting:**
+
+- Path Variable:
+  - `userId` (long)
+- Request Body:
+
+```json
+{
+  "productId": "long",
+  "quantity": "int"
+}
+```
+
+Logic:
+1.Validate quantity > 0.
+2.Fetch user ,throw ResourceNotFoundException if not found.
+3.Fetch cart (create if not exists).
+4.Fetch product , throw ResourceNotFoundException if not found.
+5.Validate stock availability.
+6.If product already exists in cart , increase quantity (validate stock again).
+Else, create new CartItem.
+7.Update cart updatedAt.
+8.Return CartResponse.
+
+**Response:**
+
+{
+  "cartId": "long",
+  "userId": "long",
+  "items": [
+    {
+      "cartItemId": "long",
+      "productId": "long",
+      "productName": "string",
+      "quantity": "int",
+      "price": "double",
+      "subtotal": "double"
+    }
+  ],
+  "totalAmount": "double",
+  "updatedAt": "ISO_LOCAL_DATE_TIME"
+}
+
+### viewCart Method
+
+**Endpoint:** ```GET /users/{userId}/cart``` 
+
+**Parameter Expecting:**
+Path Variable: userId (long)
+
+Logic:
+1.Fetch user , throw ResourceNotFoundException if not found.
+2.Fetch cart , throw ResourceNotFoundException if not found.
+3.Return CartResponse.
+
+**Response:**
+Same as addToCart response structure.
+
+### removeCartItem Method
+
+**Endpoint:** `DELETE /users/{userId}/cart/{productId}` 
+**Parameter Expecting:**
+Path Variables: userId (long), productId (long)
+
+Logic:
+1. Fetch user , throw ResourceNotFoundException if not found.
+2. Fetch cart , throw ResourceNotFoundException if not found.
+3. Fetch product , throw ResourceNotFoundException if not found.
+4. Find CartItem , throw ResourceNotFoundException if not in cart.
+5. Delete cart item.
+
+**Response:** No content (204 No Content).
+
+
+### `checkout` Method
+
+**Endpoint:** `POST /orders/checkout` 
+**Parameter Expecting:**
+
+```json
+{
+  "userId": "long",
+  "currency": "string"
+}
+```
+
+Logic:
+1. Fetch cart by userId, throw ResourceNotFoundException if not found.
+2. Validate cart is not empty.
+3. Validate stock for each cart item.
+4. Deduct product stock.
+5. Calculate total amount.
+6. Convert total amount using currency conversion service.
+7.Create and save Order.
+8.Create and save OrderItem entries.
+9.Clear cart items.
+10.Return OrderResponse.
+
+**Response:**
+{
+  "orderId": "long",
+  "orderDate": "ISO_LOCAL_DATE_TIME",
+  "status": "string",
+  "currency": "string",
+  "totalAmount": "double",
+  "convertedAmount": "double",
+  "items": [
+    {
+      "productId": "long",
+      "productName": "string",
+      "quantity": "int",
+      "price": "double",
+      "subtotal": "double"
+    }
+  ]
+}
+
+### getAllOrders Method
+
+**Endpoint:** `GET /users/{userId}/orders`
+
+**Parameter Expecting**: 
+Path Variable: userId (long)
+
+Logic:
+1.Fetch all orders by userId.
+2. Map each order and its items to OrderResponse.
+3. Return list of OrderResponse.
+
+**Response:**
+
+[
+  {
+    "orderId": "long",
+    "orderDate": "ISO_LOCAL_DATE_TIME",
+    "status": "string",
+    "currency": "string",
+    "totalAmount": "double",
+    "convertedAmount": "double",
+    "items": [
+      {
+        "productId": "long",
+        "productName": "string",
+        "quantity": "int",
+        "price": "double",
+        "subtotal": "double"
+      }
+    ]
+  }
+]
+
