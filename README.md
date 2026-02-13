@@ -27,3 +27,27 @@ Logic:
   "email": "string",
   "createdAt": "ISO_LOCAL_DATE_TIME"
 }
+
+### `createCategory` Method
+
+**Endpoint:** `POST /categories` *(example)*
+**Parameter Expecting:**
+
+```json
+{
+  "name": "string",
+  "description": "string"
+}
+Logic:
+-Check if category name already exists otherwise throw ResourceAlreadyExistsException if yes.
+-Create new Category entity from request.
+-Save Category to repository.
+-Return CategoryResponse.
+
+Response:
+
+{
+  "id": "long",
+  "name": "string",
+  "description": "string"
+}
