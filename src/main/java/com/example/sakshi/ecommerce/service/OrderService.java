@@ -37,7 +37,7 @@ public class OrderService {
         this.currencyConversionService = currencyConversionService;
     }
 
-
+    @Transactional
     public OrderResponse checkout(CheckoutRequest request) {
 
         Long userId = request.getUserId();

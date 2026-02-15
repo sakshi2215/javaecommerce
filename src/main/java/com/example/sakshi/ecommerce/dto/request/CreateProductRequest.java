@@ -1,17 +1,24 @@
 package com.example.sakshi.ecommerce.dto.request;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
+
+import java.math.BigDecimal;
 
 public class CreateProductRequest {
 
-    @NotBlank(message = "Name is required")
-    private String name;
 
+    @NotBlank(message = "Product name is required")
+    @Size(min = 2, max = 100, message = "Product name must be between 2 and 100 characters")
+    @Pattern(
+            regexp = "^[A-Za-z0-9 &'-]+$",
+            message = "Product name contains invalid characters"
+    )
+    private String name;
+    @Size(max = 500, message = "Description must not exceed 500 characters")
     private String description;
 
     @NotNull(message = "Price is required")
-    @Min(value = 1, message = "Price must be greater than 0")
+//    @DecimalMin(value = "0.01", message = "Price must be greater than 0")
+    @Digits(integer = 10, fraction = 2, message = "Price must be a valid monetary value")
     private Double price;
 
     @NotNull(message = "Stock quantity is required")
@@ -19,6 +26,7 @@ public class CreateProductRequest {
     private Integer stockQuantity;
 
     @NotNull(message = "Category ID is required")
+    @Positive(message = "Category ID must be positive")
     private Long categoryId;
 
     public CreateProductRequest() {

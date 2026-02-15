@@ -30,7 +30,7 @@ public class CartService {
         this.productRepository = productRepository;
         this.cartItemRepository = cartItemRepository;
     }
-
+    @Transactional
     public CartResponse addToCart(Long userId, Long productId, int quantity) {
 
         //  Validate quantity

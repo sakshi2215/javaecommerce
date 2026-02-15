@@ -1,13 +1,18 @@
 package com.example.sakshi.ecommerce.dto.request;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 public class CheckoutRequest {
 
     @NotNull(message = "User ID is required")
+    @Positive(message = "User ID must be positive")
     private Long userId;
 
     @NotBlank(message = "Currency is required")
+    @Size(min = 3, max = 3, message = "Currency must be a 3-letter ISO code")
+    @Pattern(
+            regexp = "^[A-Z]{3}$",
+            message = "Currency must be a valid 3-letter uppercase code"
+    )
     private String currency;
 
     public CheckoutRequest() {

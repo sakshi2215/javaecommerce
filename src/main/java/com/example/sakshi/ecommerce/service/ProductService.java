@@ -19,7 +19,7 @@ public class ProductService {
 
 
 
-
+   @Transactional
     public ProductResponse createProduct(CreateProductRequest request){
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException(

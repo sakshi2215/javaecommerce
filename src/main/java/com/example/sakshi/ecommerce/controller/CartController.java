@@ -1,6 +1,7 @@
 package com.example.sakshi.ecommerce.controller;
 import com.example.sakshi.ecommerce.dto.response.CartResponse;
 import com.example.sakshi.ecommerce.service.CartService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +16,7 @@ public class CartController {
     }
     @PostMapping("/add")
     public ResponseEntity<CartResponse> addToCart(
+            @Valid
             @RequestParam Long userId,
             @RequestParam Long productId,
             @RequestParam int quantity
@@ -24,13 +26,14 @@ public class CartController {
     }
 
     @GetMapping("/view/{userId}")
-    public ResponseEntity<CartResponse> viewCart(@PathVariable Long userId) {
+    public ResponseEntity<CartResponse> viewCart(@Valid @PathVariable Long userId) {
         CartResponse response = cartService.viewCart(userId);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/remove")
     public ResponseEntity<Void> removeCartItem(
+            @Valid
             @RequestParam Long userId,
             @RequestParam Long productId
     ) {

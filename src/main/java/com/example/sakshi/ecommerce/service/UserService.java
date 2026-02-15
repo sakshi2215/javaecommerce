@@ -9,6 +9,9 @@ import com.example.sakshi.ecommerce.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class UserService {
 
@@ -20,7 +23,7 @@ public class UserService {
         this.cartRepository = cartRepository;
     }
 
-
+   @Transactional
     public UserResponse registerUser(RegisterUserRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -43,5 +46,18 @@ public class UserService {
                 savedUser.getEmail(),
                 savedUser.getCreatedAt()
         );
+    }
+
+    //Get all users
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(user -> {
+                    UserResponse userResponse = new UserResponse();
+                    userResponse.setId(user.getId());
+                    userResponse.setName(user.getName());
+                    userResponse.setEmail(user.getEmail());
+                    return userResponse;
+                })
+                .collect(Collectors.toList());
     }
 }

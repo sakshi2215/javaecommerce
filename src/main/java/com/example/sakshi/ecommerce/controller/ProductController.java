@@ -22,6 +22,7 @@ public class ProductController {
     }
     @PatchMapping("/{productId}/updatestock")
     public ResponseEntity<ProductResponse> updateStock(
+            @Valid
             @PathVariable Long productId,
             @RequestParam int quantity
     ) {
