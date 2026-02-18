@@ -18,7 +18,10 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
+   /*
+   In Spring Boot, the ResponseEntity class is used to represent the entire HTTP response, allowing developers to control the status code,
+   headers, and body of the response with fine-grained control.
+   It is a generic class, ResponseEntity<T>, where T is the type of the body you want to return*/
     @PostMapping("/register")
     public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody RegisterUserRequest request) {
         UserResponse response = userService.registerUser(request);
